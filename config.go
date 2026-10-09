@@ -60,7 +60,7 @@ type Config struct {
 	RPMTolerance     float64       // allowed relative RPM deviation from calibration
 	RPMToleranceAbs  int           // ...but never less than this many RPM
 	MinLevelStepRPM  int           // levels closer than this to the one below are dropped
-	UIRefresh        time.Duration // status line period when not drawing on a terminal
+	UIRefresh        time.Duration // status line period when not on a terminal (e.g. systemd journal)
 }
 
 func DefaultConfig() Config {
@@ -111,7 +111,7 @@ func DefaultConfig() Config {
 		RPMTolerance:     0.25,
 		RPMToleranceAbs:  600,
 		MinLevelStepRPM:  100,
-		UIRefresh:        5 * time.Second,
+		UIRefresh:        time.Minute,
 	}
 }
 

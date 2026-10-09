@@ -1,0 +1,19 @@
+[Unit]
+Description=cooldown - aggressive ThinkPad fan controller
+Documentation=https://github.com/jayeen28/cooldown-thinkpad
+After=systemd-modules-load.service
+
+[Service]
+ExecStart=/usr/local/bin/cooldown
+# SIGTERM (systemctl stop, shutdown) hands the fan back to its previous mode.
+KillSignal=SIGTERM
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+ProtectHome=yes
+PrivateTmp=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

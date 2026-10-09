@@ -66,6 +66,34 @@ None are needed for normal use.
 ./cooldown-linux-amd64 --status
 ```
 
+### Run at startup (systemd)
+
+From a clone of this repository, with the binary at
+`dist/cooldown-linux-amd64` (download it or run `make linux`):
+
+```sh
+sudo bash contrib/install.sh
+```
+
+This script does three things:
+
+- installs `/usr/local/bin/cooldown`;
+- enables `fan_control=1` in `/etc/modprobe.d/cooldown.conf`;
+- installs, enables and starts [`cooldown.service`](contrib/cooldown.service).
+
+The fan is recalibrated at each boot, which takes about 1–2 minutes with the
+fan loud.
+
+```sh
+systemctl status cooldown         # is it running?
+journalctl -u cooldown -f         # live log: events, plus a status line each minute
+sudo systemctl stop cooldown      # stop; the fan goes back to firmware auto
+sudo systemctl disable --now cooldown   # don't start at boot
+```
+
+Don't run it alongside thinkfan or thinkfan-ui. cooldown detects them and
+stays in monitor-only mode.
+
 ### Linux prerequisite: enable manual fan control
 
 The `thinkpad_acpi` kernel driver ignores fan commands unless it was loaded
