@@ -134,7 +134,15 @@ func (s *session) start(ctx context.Context) error {
 		t, ok := controlTemp(s.hw.ReadTemps(), s.cfg)
 		return ok && t >= s.cfg.EmergencyTemp
 	}
-	levels, err := calibrate(ctx, s.cfg, s.hw.ControlLevels(), s.setLevel, s.hw.ReadFan, tooHot, sleepCtx,
+	// A level can take longer to settle than the watchdog timeout, so refresh it on every wait.
+	wait := func(ctx context.Context, d time.Duration) bool {
+		ok := sleepCtx(ctx, d)
+		if ok && s.hw.Keepalive() == nil {
+			s.lastCmd = time.Now()
+		}
+		return ok
+	}
+	levels, err := calibrate(ctx, s.cfg, s.hw.ControlLevels(), s.setLevel, s.hw.ReadFan, tooHot, wait,
 		func(msg string) { s.ui.progress("Calibrating: " + msg) })
 	s.ui.progress("")
 	if errors.Is(err, errTooHot) {
